@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+  vars_files:
+  - user_list.yml
+  vars:
+  - mypass: "{{ lookup('password', './password-{{ item.name }} length=5') }}"
+  tasks:
+  - name: user create
+    user:
+      name: "{{ item.name }}"
+      comment: "{{ item.first | capitalize }} {{ item.middle | capitalize }} {{ item.last | capitalize }}"
+      uid: "{{ item.uid }}"
+      password: "{{ mypass | password_hash('sha512') }}"
+    with_items:
+    - "{{ myusers }}"
+
